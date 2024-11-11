@@ -1,5 +1,5 @@
 import { Card, CardActions, CardContent, Button, IconButton, Stack, Typography } from "@mui/material";
-import { Delete, HourglassEmpty, Mic, MicOff } from "@mui/icons-material";
+import { Delete, HourglassBottom, Mic, MicOff } from "@mui/icons-material";
 import { useState, useRef } from "react";
 
 interface AudioRecordCardProps {
@@ -21,29 +21,35 @@ export default function AudioRecordCard({
   const audioChunksRef = useRef<Blob[]>([]);
 
   async function startRecording() {
-    audioChunksRef.current = [];
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const recorder = new MediaRecorder(stream);
-    setMediaRecorder(recorder);
+    try {
+      audioChunksRef.current = [];
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      setMediaRecorder(recorder);
 
-    recorder.ondataavailable = (event) => {
-      audioChunksRef.current.push(event.data);
-    };
+      recorder.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);
+      };
 
-    recorder.onstop = () => {
-      const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
-      const url = URL.createObjectURL(audioBlob);
-      setAudio(new Audio(url));
-    };
+      recorder.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
+        const url = URL.createObjectURL(audioBlob);
+        setAudio(new Audio(url));
+      };
 
-    recorder.start();
-    setIsRecording(true);
+      recorder.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error("Error starting recording:", error);
+    }
   }
 
   function stopRecording() {
-    mediaRecorder?.stop();
-    setIsRecording(false);
-    transcribeAudio();
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+      setIsRecording(false);
+      transcribeAudio();
+    }
   }
 
   async function transcribeAudio() {
@@ -68,14 +74,18 @@ export default function AudioRecordCard({
     //   const data = await response.json();
     //   console.log(data);
     // } catch (error) {
-    //   console.error(error);
+    //   console.error("Error transcribing audio:", error);
     // }
   }
 
   function deleteAudio() {
-    audio?.pause();
+    if (audio) {
+      audio.pause();
+      URL.revokeObjectURL(audio.src);
+    }
     setAudio(null);
     setTranscription(null);
+    setIsTranscribing(false);
   }
 
   return (
@@ -121,7 +131,7 @@ export default function AudioRecordCard({
       {isTranscribing && (
         <CardActions sx={{ justifyContent: "center", pb: 2 }}>
           <IconButton>
-            <HourglassEmpty />
+            <HourglassBottom />
           </IconButton>
           <Typography variant="body2">Transcribing audio...</Typography>
         </CardActions>
