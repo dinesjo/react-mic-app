@@ -37,17 +37,7 @@ export default function App() {
             WebkitTextFillColor: "transparent",
           }}
         >
-          <AppShortcutTwoTone
-            fontSize="large"
-            color="primary"
-            sx={{
-              ".MuiIcon-root": {
-                background: "linear-gradient(45deg, #70dda5, #006390)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              },
-            }}
-          />
+          <AppShortcutTwoTone fontSize="large" color="primary" />
           <Typography variant="h4" component="h1">
             AI-dagbok
           </Typography>

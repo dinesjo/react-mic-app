@@ -1,5 +1,15 @@
-import { Card, CardActions, CardContent, Button, IconButton, Stack, Typography } from "@mui/material";
-import { CheckCircle, Delete, Mic, MicOff } from "@mui/icons-material";
+import {
+  Card,
+  CardActions,
+  CardContent,
+  Button,
+  IconButton,
+  Stack,
+  Typography,
+  Container,
+  Divider,
+} from "@mui/material";
+import { CheckCircle, Delete, Mic, MicOff, SubtitlesOutlined } from "@mui/icons-material";
 import { useState, useRef } from "react";
 import GradientCircularProgress from "./GradientCircularProgres";
 interface AudioRecordCardProps {
@@ -129,7 +139,7 @@ export default function AudioRecordCard({ title, description, icon }: AudioRecor
           <Typography variant="h5">{title}</Typography>
         </Stack>
         {description && (
-          <Typography variant="body1" sx={{ mt: 2 }}>
+          <Typography variant="body1" sx={{ mt: 2, color: "text.secondary" }}>
             {description}
           </Typography>
         )}
@@ -161,9 +171,16 @@ export default function AudioRecordCard({ title, description, icon }: AudioRecor
         </CardActions>
       )}
       {transcription && !isTranscribing && (
-        <CardActions sx={{ justifyContent: "center", pb: 2 }}>
-          <Typography variant="body2">{transcription}</Typography>
-        </CardActions>
+        <Container sx={{ mb: 1 }}>
+          <Stack direction="row" gap={1}>
+            <SubtitlesOutlined fontSize="small" />
+            <Typography variant="subtitle2">Ditt svar</Typography>
+          </Stack>
+          <Divider orientation="vertical" flexItem />
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            {transcription}
+          </Typography>
+        </Container>
       )}
       {isTranscribing && (
         <CardActions sx={{ justifyContent: "center", pb: 2 }}>
