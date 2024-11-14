@@ -1,12 +1,11 @@
-import { Box, Button, CssBaseline, Divider, Fab, Stack, Stepper } from "@mui/material";
-import { AppBar, Toolbar, IconButton, Container } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+import { Box, Button, CssBaseline, Stack, Typography } from "@mui/material";
+import { Container } from "@mui/material";
 import {
   AccessTimeOutlined,
+  AppShortcutOutlined,
   BadgeOutlined,
   BuildOutlined,
   LocationOnOutlined,
-  Mic,
   ReportOutlined,
   Send,
   WarningAmberOutlined,
@@ -28,8 +27,16 @@ export default function App() {
   return (
     <>
       <CssBaseline />
+      <Container>
+        <Stack gap={1} alignItems="center" direction="row" sx={{ my: 3 }}>
+          <AppShortcutOutlined fontSize="large" />
+          <Typography variant="h4" component="h1">
+            AI-dagbok
+          </Typography>
+        </Stack>
+      </Container>
       <Container sx={{ mb: 3 }}>
-        <Stack direction="column" gap={2} sx={{ my: 3 }}>
+        <Stack direction="column" sx={{ my: 3 }}>
           <AudioRecordCard
             icon={
               <Box sx={{ position: "relative", width: 52, height: 52 }}>
@@ -49,12 +56,12 @@ export default function App() {
           <AudioRecordCard
             icon={<WarningAmberOutlined />}
             title="Har det uppstått några arbetsmiljörisker under dagen?"
-            description=""
+            description="Om inte, lämna tom."
           />
           <AudioRecordCard
             icon={<ReportOutlined />}
             title="Har någon situation uppstått som försvårat arbetet?"
-            description=""
+            description="Om inte, lämna tom."
           />
         </Stack>
         <Button

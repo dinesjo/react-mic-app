@@ -1,5 +1,5 @@
 import { Card, CardActions, CardContent, Button, IconButton, Stack, Typography } from "@mui/material";
-import { Delete, HourglassBottom, Mic, MicOff } from "@mui/icons-material";
+import { CheckCircle, Delete, HourglassBottom, Mic, MicOff } from "@mui/icons-material";
 import { useState, useRef } from "react";
 interface AudioRecordCardProps {
   title?: string;
@@ -21,6 +21,7 @@ export default function AudioRecordCard({ title, description, icon }: AudioRecor
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [transcription, setTranscription] = useState<string | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const [answered, setAnswered] = useState(false);
 
   async function startRecording() {
     try {
@@ -60,6 +61,12 @@ export default function AudioRecordCard({ title, description, icon }: AudioRecor
     }
   }
 
+  function updateTranscriptionState(isTranscribing: boolean, transcription: string | null, answered: boolean) {
+    setIsTranscribing(isTranscribing);
+    setTranscription(transcription);
+    setAnswered(answered);
+  }
+
   async function transcribeAudio(base64Audio?: string) {
     setIsTranscribing(true);
 
@@ -83,20 +90,19 @@ export default function AudioRecordCard({ title, description, icon }: AudioRecor
         });
         const data = (await response.json()) as TranscriptionResponse;
         if (data.RecognitionStatus !== "Success") {
-          setTranscription("API side error.");
-          setIsTranscribing(false);
+          updateTranscriptionState(false, "API server fault.", false);
+          return;
+        } else if (!data.DisplayText) {
+          updateTranscriptionState(false, "No words detected, try again.", false);
           return;
         }
-        setTranscription(data.DisplayText || "No audio regonized.");
-        setIsTranscribing(false);
+        updateTranscriptionState(false, data.DisplayText, true);
       } catch (error) {
         console.error("Error transcribing audio:", error);
-        setTranscription("Error transcribing audio.");
-        setIsTranscribing(false);
+        updateTranscriptionState(false, "Error transcribing audio.", false);
       }
     } else {
-      setIsTranscribing(false);
-      setTranscription("No audio found.");
+      updateTranscriptionState(false, "Failed to convert WAV to Base64", false);
     }
   }
 
@@ -106,18 +112,26 @@ export default function AudioRecordCard({ title, description, icon }: AudioRecor
       URL.revokeObjectURL(audio.src);
     }
     setAudio(null);
-    setTranscription(null);
-    setIsTranscribing(false);
+    updateTranscriptionState(false, null, false);
   }
 
   return (
-    <Card elevation={3} sx={{ maxWidth: 400, margin: "16px auto" }}>
+    <Card elevation={3} sx={{ maxWidth: 400, margin: "16px auto", position: "relative", overflow: "visible" }}>
+      {answered && (
+        <IconButton sx={{ position: "absolute", top: "-1em", right: "-1em" }} disabled>
+          <CheckCircle fontSize="large" color="success" />
+        </IconButton>
+      )}
       <CardContent>
-        <Stack direction="row" alignItems="center" gap={1} marginBottom={2}>
+        <Stack direction="row" alignItems="center" gap={1}>
           {icon}
           <Typography variant="h5">{title}</Typography>
         </Stack>
-        {description && <Typography variant="body1">{description}</Typography>}
+        {description && (
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            {description}
+          </Typography>
+        )}
       </CardContent>
       <CardActions sx={{ justifyContent: "space-between" }}>
         {isRecording ? (
