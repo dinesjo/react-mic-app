@@ -7,7 +7,6 @@ import {
   Stack,
   Typography,
   Container,
-  Divider,
 } from "@mui/material";
 import { CheckCircle, Delete, Mic, MicOff, SubtitlesOutlined } from "@mui/icons-material";
 import { useState, useRef } from "react";
@@ -144,6 +143,37 @@ export default function AudioRecordCard({ title, description, icon }: AudioRecor
           </Typography>
         )}
       </CardContent>
+      {transcription && !isTranscribing && (
+        <Container sx={{ mb: 2 }}>
+          <Stack direction="row" gap={1}>
+            <SubtitlesOutlined fontSize="small" />
+            <Typography variant="subtitle2">Ditt svar</Typography>
+          </Stack>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            {transcription}
+          </Typography>
+        </Container>
+      )}
+      {isTranscribing && (
+        <CardActions sx={{ justifyContent: "center", pb: 2 }}>
+          <GradientCircularProgress />
+          <Typography
+            variant="body2"
+            sx={{
+              background: "linear-gradient(45deg, #006390, #70dda5)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Transcribing audio...
+          </Typography>
+        </CardActions>
+      )}
+      {audio && (
+        <CardActions sx={{ justifyContent: "center", pb: 2 }}>
+          <audio controls src={audio.src} style={{ width: "100%" }} />
+        </CardActions>
+      )}
       <CardActions sx={{ justifyContent: "space-between" }}>
         {isRecording ? (
           <Button startIcon={<MicOff />} variant="contained" color="error" onClick={stopRecording} fullWidth>
@@ -165,38 +195,6 @@ export default function AudioRecordCard({ title, description, icon }: AudioRecor
           <Delete />
         </IconButton>
       </CardActions>
-      {audio && (
-        <CardActions sx={{ justifyContent: "center", pb: 2 }}>
-          <audio controls src={audio.src} style={{ width: "100%" }} />
-        </CardActions>
-      )}
-      {transcription && !isTranscribing && (
-        <Container sx={{ mb: 1 }}>
-          <Stack direction="row" gap={1}>
-            <SubtitlesOutlined fontSize="small" />
-            <Typography variant="subtitle2">Ditt svar</Typography>
-          </Stack>
-          <Divider orientation="vertical" flexItem />
-          <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            {transcription}
-          </Typography>
-        </Container>
-      )}
-      {isTranscribing && (
-        <CardActions sx={{ justifyContent: "center", pb: 2 }}>
-          <GradientCircularProgress />
-          <Typography
-            variant="body2"
-            sx={{
-              background: "linear-gradient(45deg, #006390, #70dda5)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
-          >
-            Transcribing audio...
-          </Typography>
-        </CardActions>
-      )}
     </Card>
   );
 }
