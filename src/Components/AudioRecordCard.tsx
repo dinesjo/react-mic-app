@@ -1,18 +1,20 @@
 import { Card, CardActions, CardContent, Button, IconButton, Stack, Typography } from "@mui/material";
 import { Delete, HourglassBottom, Mic, MicOff } from "@mui/icons-material";
 import { useState, useRef } from "react";
-
 interface AudioRecordCardProps {
   title?: string;
   description?: string;
   icon?: React.ReactNode;
 }
 
-export default function AudioRecordCard({
-  title = "Description",
-  description = "What work has been done?",
-  icon,
-}: AudioRecordCardProps) {
+interface TranscriptionResponse {
+  DisplayText: string;
+  Duration: number;
+  Offset: number;
+  RecognitionStatus: string;
+}
+
+export default function AudioRecordCard({ title, description, icon }: AudioRecordCardProps) {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -33,6 +35,12 @@ export default function AudioRecordCard({
 
       recorder.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64Audio = reader.result as string;
+          transcribeAudio(base64Audio);
+        };
+        reader.readAsDataURL(audioBlob);
         const url = URL.createObjectURL(audioBlob);
         setAudio(new Audio(url));
       };
@@ -52,30 +60,44 @@ export default function AudioRecordCard({
     }
   }
 
-  async function transcribeAudio() {
+  async function transcribeAudio(base64Audio?: string) {
     setIsTranscribing(true);
-    const audioBlob = new Blob(audioChunksRef.current, { type: "audio/wav" });
-    const formData = new FormData();
-    formData.append("audio", audioBlob);
 
-    // Delay 2s to simulate transcription
-    setTimeout(() => {
+    if (base64Audio) {
+      // Call the API to transcribe the audio
+      const audioData = {
+        audio: {
+          language: "sv-se",
+          mime: "audio/wav",
+          data: base64Audio.split(",")[1], // Remove the data URL prefix
+        },
+      };
+
+      try {
+        const response = await fetch(import.meta.env.VITE_API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(audioData),
+        });
+        const data = (await response.json()) as TranscriptionResponse;
+        if (data.RecognitionStatus !== "Success") {
+          setTranscription("API side error.");
+          setIsTranscribing(false);
+          return;
+        }
+        setTranscription(data.DisplayText || "No audio regonized.");
+        setIsTranscribing(false);
+      } catch (error) {
+        console.error("Error transcribing audio:", error);
+        setTranscription("Error transcribing audio.");
+        setIsTranscribing(false);
+      }
+    } else {
       setIsTranscribing(false);
-      setTranscription(
-        "This is a transcription of the audio recording. It can be quite long and detailed. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-      );
-    }, 2000);
-
-    // try {
-    //   const response = await fetch("", {
-    //     method: "POST",
-    //     body: formData,
-    //   });
-    //   const data = await response.json();
-    //   console.log(data);
-    // } catch (error) {
-    //   console.error("Error transcribing audio:", error);
-    // }
+      setTranscription("No audio found.");
+    }
   }
 
   function deleteAudio() {
@@ -123,7 +145,7 @@ export default function AudioRecordCard({
           <audio controls src={audio.src} style={{ width: "100%" }} />
         </CardActions>
       )}
-      {transcription && (
+      {transcription && !isTranscribing && (
         <CardActions sx={{ justifyContent: "center", pb: 2 }}>
           <Typography variant="body2">{transcription}</Typography>
         </CardActions>
