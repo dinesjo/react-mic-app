@@ -168,7 +168,16 @@ export default function AudioRecordCard({ title, description, icon }: AudioRecor
       {isTranscribing && (
         <CardActions sx={{ justifyContent: "center", pb: 2 }}>
           <GradientCircularProgress />
-          <Typography variant="body2">Transcribing audio...</Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              background: "linear-gradient(45deg, #006390, #70dda5)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Transcribing audio...
+          </Typography>
         </CardActions>
       )}
     </Card>
