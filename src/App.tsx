@@ -1,9 +1,7 @@
-import { Box, Button, CssBaseline, Stack, Typography } from "@mui/material";
+import { Button, CssBaseline, Stack, Typography } from "@mui/material";
 import { Container } from "@mui/material";
 import {
-  AccessTimeOutlined,
-  AppShortcutOutlined,
-  BadgeOutlined,
+  AppShortcutTwoTone,
   BuildOutlined,
   LocationOnOutlined,
   ReportOutlined,
@@ -27,39 +25,56 @@ export default function App() {
   return (
     <>
       <CssBaseline />
-      <Container>
-        <Stack gap={1} alignItems="center" direction="row" sx={{ my: 3 }}>
-          <AppShortcutOutlined fontSize="large" />
+      <Container maxWidth="xs" sx={{ mb: 3 }}>
+        <Stack
+          gap={1}
+          alignItems="center"
+          direction="row"
+          sx={{
+            mt: 3,
+            background: "linear-gradient(45deg, #006390, #70dda5)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          <AppShortcutTwoTone
+            fontSize="large"
+            color="primary"
+            sx={{
+              ".MuiIcon-root": {
+                background: "linear-gradient(45deg, #70dda5, #006390)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              },
+            }}
+          />
           <Typography variant="h4" component="h1">
             AI-dagbok
           </Typography>
         </Stack>
-      </Container>
-      <Container sx={{ mb: 3 }}>
-        <Stack direction="column" sx={{ my: 3 }}>
-          <AudioRecordCard
-            icon={
-              <Box sx={{ position: "relative", width: 52, height: 52 }}>
-                <BadgeOutlined sx={{ position: "absolute", top: 0 }} />
-                <AccessTimeOutlined sx={{ position: "absolute", bottom: 0 }} />
-              </Box>
-            }
+        <Stack direction="column" sx={{ my: 2 }}>
+          {/* <AudioRecordCard
+            icon={<AccessTimeOutlined color="info" />}
             title="Ange namn samt antal arbetade timmar"
             description="Namn på de som arbetat. Avrunda till hela timmar."
-          />
+          /> */}
           <AudioRecordCard
-            icon={<LocationOnOutlined />}
+            icon={<LocationOnOutlined color="success" />}
             title="Vart har dagens arbete genomförts?"
             description="Ange address samt ort."
           />
-          <AudioRecordCard icon={<BuildOutlined />} title="Vilka arbetsmoment har utförts?" description="" />
           <AudioRecordCard
-            icon={<WarningAmberOutlined />}
+            icon={<BuildOutlined color="primary" />}
+            title="Vilka arbetsmoment har utförts?"
+            description=""
+          />
+          <AudioRecordCard
+            icon={<WarningAmberOutlined color="error" />}
             title="Har det uppstått några arbetsmiljörisker under dagen?"
             description="Om inte, lämna tom."
           />
           <AudioRecordCard
-            icon={<ReportOutlined />}
+            icon={<ReportOutlined color="warning" />}
             title="Har någon situation uppstått som försvårat arbetet?"
             description="Om inte, lämna tom."
           />

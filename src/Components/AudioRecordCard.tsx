@@ -1,6 +1,7 @@
 import { Card, CardActions, CardContent, Button, IconButton, Stack, Typography } from "@mui/material";
-import { CheckCircle, Delete, HourglassBottom, Mic, MicOff } from "@mui/icons-material";
+import { CheckCircle, Delete, Mic, MicOff } from "@mui/icons-material";
 import { useState, useRef } from "react";
+import GradientCircularProgress from "./GradientCircularProgres";
 interface AudioRecordCardProps {
   title?: string;
   description?: string;
@@ -166,9 +167,7 @@ export default function AudioRecordCard({ title, description, icon }: AudioRecor
       )}
       {isTranscribing && (
         <CardActions sx={{ justifyContent: "center", pb: 2 }}>
-          <IconButton>
-            <HourglassBottom />
-          </IconButton>
+          <GradientCircularProgress />
           <Typography variant="body2">Transcribing audio...</Typography>
         </CardActions>
       )}
